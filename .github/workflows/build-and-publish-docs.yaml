@@ -8,6 +8,7 @@ on:
       - 'v*'
 
 permissions:
+  contents: write   # to read and write repository contents
   pages: write      # to deploy to Pages
   id-token: write   # to verify the deployment originates from an appropriate source
 
