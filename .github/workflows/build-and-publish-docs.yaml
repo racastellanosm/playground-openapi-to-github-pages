@@ -2,8 +2,6 @@ name: Build and Publish Docs
 
 on:
   push:
-    branches-ignore:
-      - main
     tags:
       - 'v*'
 
@@ -37,6 +35,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          force_orphan: true
           publish_branch: 'github-pages'
           exclude_assets: '.github,api,.redocly.yaml,LICENSE,README.md,Makefile'
 
