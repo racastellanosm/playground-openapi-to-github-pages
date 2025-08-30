@@ -1,0 +1,45 @@
+name: Build and Publish Docs
+
+on:
+  push:
+    branches-ignore:
+      - main
+    tags:
+      - 'v*'
+
+permissions:
+  pages: write      # to deploy to Pages
+  id-token: write   # to verify the deployment originates from an appropriate source
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 'Checkout Source Code'
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'Set up Node.js'
+        uses: actions/setup-node@v3
+
+      - name: Build Docs
+        id: build
+        run: make build-docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: 'github-pages'
+          exclude_assets: '.github,api,.redocly.yaml,LICENSE,README.md,Makefile'
+
+      - name: 'Get Page URL'
+        run: |
+          echo "Page URL: ${{ steps.deployment.outputs.page_url }}"
+
