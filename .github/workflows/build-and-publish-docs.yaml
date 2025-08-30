@@ -37,7 +37,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
           force_orphan: true
-          publish_branch: 'github-pages'
           exclude_assets: '.github,api,.redocly.yaml,LICENSE,README.md,Makefile'
 
       - name: 'Get Page URL'
