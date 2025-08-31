@@ -37,7 +37,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
           force_orphan: true
-          exclude_assets: '.github,api,.redocly.yaml,LICENSE,README.md,Makefile'
+          exclude_assets: '.gitignore,.nojekyll,.github,api,.redocly.yaml,LICENSE,README.md,Makefile'
 
       - name: 'Get Page URL'
         run: |
