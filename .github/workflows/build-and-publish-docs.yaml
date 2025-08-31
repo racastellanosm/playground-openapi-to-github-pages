@@ -5,17 +5,9 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: write   # to read and write repository contents
-  pages: write      # to deploy to Pages
-  id-token: write   # to verify the deployment originates from an appropriate source
-
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: 'Checkout Source Code'
         id: checkout
@@ -23,23 +15,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 'Set up Node.js'
-        uses: actions/setup-node@v3
-
       - name: Build Docs
         id: build
-        run: make build-docs
+        run: make build-static-site
+        with:
+          source: ./build
+          destination: ./build
 
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './build'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # to read and write repository contents
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          force_orphan: true
-          exclude_assets: '.gitignore,.nojekyll,.github,api,.redocly.yaml,LICENSE,README.md,Makefile'
-
-      - name: 'Get Page URL'
-        run: |
-          echo "Page URL: ${{ steps.deployment.outputs.page_url }}"
+        uses: actions/deploy-pages@v4
 
