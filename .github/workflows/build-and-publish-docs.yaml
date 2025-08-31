@@ -6,6 +6,9 @@ on:
       - '*'
     tags:
       - 'v*'
+  repository_dispatch:
+    types:
+      - new-api-version-tagged
 
 permissions:
   contents: write   # to read and write repository contents
