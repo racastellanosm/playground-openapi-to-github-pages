@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation Hub</title>
+    <style>
+        /* General Styles & Modernization */
+        :root {
+            --primary-color: #007bff; /* A nice blue for accents */
+            --secondary-color: #f8f9fa; /* Light gray for backgrounds */
+            --text-color: #212529; /* Dark text */
+            --nav-bg: #343a40; /* Darker background for nav */
+            --card-bg: #ffffff; /* White background for content cards */
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--nav-bg);
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-weight: 300;
+        }
+
+        nav {
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,.05);
+        }
+
+        nav a {
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        nav a.active {
+            background-color: #495057;
+            pointer-events: none; /* Prevents clicks on the active link */
+        }
+
+        nav a:hover:not(.active) {
+            background-color: #495057;
+            color: var(--primary-color);
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        #api-search {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        #api-search:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        #api-container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,.05);
+        }
+
+        /* Loading Indicator Styles */
+        #loading-indicator {
+            display: none; /* Hidden by default */
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>API Documentation Hub</h1>
+</header>
+<nav id="api-nav">
+</nav>
+<div class="container">
+    <div id="loading-indicator">
+        <p>Loading documentation...</p>
+    </div>
+    <div id="api-container">
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const availableApis = [
+            // Note: The path now points to the OpenAPI specification file, not the index.html.
+            { name: 'Posters API', path: '../api/posters/posters-example-openapi.yaml' },
+            { name: 'Another API', path: '../api/posters/posters-example-openapi.yaml' }
+        ];
+
+        const nav = document.getElementById('api-nav');
+        const apiContainer = document.getElementById('api-container');
+        const searchInput = document.getElementById('api-search');
+
+        // Function to render API docs using Redocly
+        async function renderApiDocs(specUrl, linkElement) {
+            // Clear previous content
+            apiContainer.innerHTML = '';
+            setActiveLink(linkElement);
+
+            // Create a new div where Redoc will render the docs
+            const redocContainer = document.createElement('div');
+            apiContainer.appendChild(redocContainer);
+
+            // Dynamically load the Redocly script
+            const script = document.createElement('script');
+            script.src = 'https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js';
+            script.onload = () => {
+                const options = {
+                    scrollYOffset: 100, // Adjust based on your header height
+                    disableSearch: true
+                };
+                // Once the script is loaded, render the docs
+                Redoc.init(specUrl, options, redocContainer);
+            };
+            document.head.appendChild(script);
+        }
+
+        function setActiveLink(clickedLink) {
+            document.querySelectorAll('#api-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (clickedLink) {
+                clickedLink.classList.add('active');
+            }
+        }
+
+        function renderApiLinks(apis) {
+            nav.innerHTML = '';
+            apis.forEach((api, index) => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = api.name;
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    renderApiDocs(api.path, e.target);
+                });
+                nav.appendChild(link);
+            });
+        }
+
+        // Initial rendering of all API links
+        renderApiLinks(availableApis);
+
+        // Load the first API doc by default
+        if (availableApis.length > 0) {
+            const firstLink = nav.querySelector('a');
+            renderApiDocs(availableApis[0].path, firstLink);
+        }
+
+        // Add the search event listener
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredApis = availableApis.filter(api =>
+                api.name.toLowerCase().includes(searchTerm)
+            );
+            renderApiLinks(filteredApis);
+        });
+    });
+</script>
+</body>
+</html>

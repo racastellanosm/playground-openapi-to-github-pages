@@ -12,7 +12,7 @@ servers:
   - url: https://my.localserver.dev
     description: Local Development Server
 tags:
-  - name: posters
+  - name: Manage Posters
     description: Operations related to music posters
 paths:
   /v1/poster:
@@ -20,7 +20,7 @@ paths:
       operationId: create-new-music-poster
       summary: Create a new music poster
       tags:
-        - posters
+        - Manage Posters
       security: []
       parameters:
         - $ref: '#/components/parameters/Content-Type'
@@ -42,7 +42,7 @@ paths:
       summary: Get all music posters
       security: []
       tags:
-        - posters
+        - Manage Posters
       parameters:
         - $ref: '#/components/parameters/FilterBy'
         - $ref: '#/components/parameters/PageNumber'
@@ -66,7 +66,7 @@ paths:
       summary: Get music poster details by its ID
       security: []
       tags:
-        - posters
+        - Manage Posters
       parameters:
         - $ref: '#/components/parameters/PosterId'
       responses:
@@ -85,7 +85,7 @@ paths:
       summary: Update a music poster by its ID
       security: []
       tags:
-        - posters
+        - Manage Posters
       parameters:
         - $ref: '#/components/parameters/PosterId'
         - $ref: '#/components/parameters/Content-Type'
@@ -107,7 +107,7 @@ paths:
       summary: Delete a music poster by its ID
       security: []
       tags:
-        - posters
+        - Manage Posters
       parameters:
         - $ref: '#/components/parameters/PosterId'
       responses:
