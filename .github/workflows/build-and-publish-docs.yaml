@@ -2,11 +2,15 @@ name: Build and Publish Docs
 
 on:
   push:
-    tags:
-      - 'v*'
-  pull_request:
     branches-ignore:
       - '*'
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # to read and write repository contents
+  pages: write      # to deploy to Pages
+  id-token: write   # to verify the deployment originates from an appropriate source
 
 jobs:
   build:
@@ -21,22 +25,16 @@ jobs:
       - name: Build Docs
         id: build
         run: make build-static-site
-        with:
-          source: ./build
-          destination: ./build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact for deployment
+        id: upload-pages
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: './build'
+          path: 'build/'
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write   # to read and write repository contents
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
